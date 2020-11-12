@@ -42,13 +42,12 @@ public class EmailCheck extends HttpServlet {
                Connection con=new DBConnect().connect(getServletContext().getRealPath("/WEB-INF/config.properties"));
                String email=request.getParameter("email").trim();
                Codec ORACLE_CODEC = new OracleCodec();
-               String sanEmail = ESAPI.encoder().encodeForSQL( ORACLE_CODEC, email);
                JSONObject json=new JSONObject();
                 if(con!=null && !con.isClosed())
                 {
                     ResultSet rs=null;
                     Statement stmt = con.createStatement();  
-                    rs=stmt.executeQuery("select * from users where email='"+sanEmail+"'");
+                    rs=stmt.executeQuery("select * from users where email='"+ESAPI.encoder().encodeForSQL( ORACLE_CODEC, email)+"'");
                     if (rs.next()) 
                     {  
                      json.put("available", "1"); 
