@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cysecurity.cspf.jvl.model.DBConnect;
 import org.json.JSONObject;
+import org.owasp.esapi.codecs.Codec;
 
 /**
  *
@@ -40,12 +41,14 @@ public class EmailCheck extends HttpServlet {
         try {
                Connection con=new DBConnect().connect(getServletContext().getRealPath("/WEB-INF/config.properties"));
                String email=request.getParameter("email").trim();
+               Encoder oe = new OracleEncoder();
+               String sanEmail=oe.encode(email);
                JSONObject json=new JSONObject();
                 if(con!=null && !con.isClosed())
                 {
                     ResultSet rs=null;
                     Statement stmt = con.createStatement();  
-                    rs=stmt.executeQuery("select * from users where email='"+email+"'");
+                    rs=stmt.executeQuery("select * from users where email='"+sanEmail+"'");
                     if (rs.next()) 
                     {  
                      json.put("available", "1"); 
