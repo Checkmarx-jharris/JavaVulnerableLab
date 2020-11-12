@@ -41,13 +41,15 @@ public class EmailCheck extends HttpServlet {
         try {
                Connection con=new DBConnect().connect(getServletContext().getRealPath("/WEB-INF/config.properties"));
                String email=request.getParameter("email").trim();
-               Codec ORACLE_CODEC = new OracleCodec();
                JSONObject json=new JSONObject();
                 if(con!=null && !con.isClosed())
                 {
                     ResultSet rs=null;
-                    Statement stmt = con.createStatement();  
-                    rs=stmt.executeQuery("select * from users where email='"+ESAPI.encoder().encodeForSQL( ORACLE_CODEC, email)+"'");
+                    Statement stmt = con.createStatement();
+                    /** Adding Oracle Codec */
+                    Codec ORACLE_CODEC = new OracleCodec();
+                    /** Sanitizing email variable inline */
+                    rs=stmt.executeQuery("select * from users where email='"+ESAPI.encoder().encodeForSQL( ORACLE_CODEC, email )+"'");
                     if (rs.next()) 
                     {  
                      json.put("available", "1"); 
