@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cysecurity.cspf.jvl.model.DBConnect;
 import org.json.JSONObject;
+import org.owasp.esapi.codecs.Codec;
+import org.owasp.esapi.Encoder;
 
 /**
  *
@@ -44,8 +46,11 @@ public class EmailCheck extends HttpServlet {
                 if(con!=null && !con.isClosed())
                 {
                     ResultSet rs=null;
-                    Statement stmt = con.createStatement();  
-                    rs=stmt.executeQuery("select * from users where email='"+email+"'");
+                    Statement stmt = con.createStatement();
+                    /** Adding Encoder */
+                    Encoder esapiEncoder = new DefaultEncoder();
+                    /** Sanitizing email variable inline */
+                    rs=stmt.executeQuery("select * from users where email='"+esapiEncoder.encodeForSQL(new OracleCodec(), email )+"'");
                     if (rs.next()) 
                     {  
                      json.put("available", "1"); 
